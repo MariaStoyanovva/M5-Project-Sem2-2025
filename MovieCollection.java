@@ -7,11 +7,12 @@ import java.util.ArrayList;
 import java.util.Comparator;
 import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
+import java.util.Scanner;
 
 public class MovieCollection {
     public static void main(String[] args) {
 
-        //  ArrayList<Movie> moviesArrayList = new ArrayList<>();
+        ArrayList<Movie> moviesArrayList = new ArrayList<>();
 
         //create frame
         JFrame frame = new JFrame("MOVIE COLLECTION MANAGER");
@@ -40,7 +41,8 @@ public class MovieCollection {
                     search.setForeground(Color.GRAY);
                 }
             }
-        });//make the search textfield have a hint message
+        });  //make the search textfield have a hint message
+
         JButton enter = new JButton("Enter");
 
         one.add(sortMovies);
@@ -52,7 +54,7 @@ public class MovieCollection {
         JPanel two = new JPanel();
 
         JTextField title = new JTextField(20);
-        String[] typesOfGenres = {"Comedy", "Romance", "Horror", "Fantasy", "Kids"};
+        String[] typesOfGenres = {"Comedy", "Romance", "Horror", "Fantasy", "Kids"};  //info for the dropdown menu of genres
         JComboBox genre = new JComboBox(typesOfGenres);
         JButton addMovie = new JButton("ADD");
 
@@ -60,10 +62,11 @@ public class MovieCollection {
         two.add(genre);
         two.add(addMovie);
 
+
         //panel 3
         JPanel three = new JPanel();
         JButton totalMovies = new JButton("Total");
-        JLabel numberOfMovies = new JLabel("bla bla");
+        JLabel numberOfMovies = new JLabel("0");
 
         three.add(totalMovies);
         three.add(numberOfMovies);
@@ -77,71 +80,108 @@ public class MovieCollection {
         JTable table = new JTable(model);
         JScrollPane scrollPane = new JScrollPane(table);
 
-        //add elements to the panel
         four.add(scrollPane, BorderLayout.CENTER);
 
+        //set up how the frame looks
         //controls and buttons on top
         JPanel containerPanel = new JPanel();
-        containerPanel.setLayout(new GridLayout(3, 1)); // Stack panels in a grid
+        containerPanel.setLayout(new GridLayout(3, 1)); // stack the panels in the container panel in a grid
         containerPanel.add(one);
         containerPanel.add(two);
         containerPanel.add(three);
 
         //add panels to the frame with BorderLayout
-        frame.add(containerPanel, BorderLayout.NORTH); // controls and buttons on Top
-        frame.add(four, BorderLayout.CENTER); // table in Center
+        frame.add(containerPanel, BorderLayout.NORTH); // controls and buttons on top
+        frame.add(four, BorderLayout.CENTER); // table in center
 
 
         //make frame visible
         frame.setVisible(true);
 
-        //addMovie button
+        //addMovie button  -  LOOK AT PANEL 2
         addMovie.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                model.addRow(new Object[]{ "", "Option 1" });
+                String infoForColumnOne = title.getText();
+                String infoForColumnTwo = (String)genre.getSelectedItem();
+                Movie currentObject = new Movie(infoForColumnOne, infoForColumnTwo); //create a Movie object with title and genre
+                moviesArrayList.add(currentObject); // add the object to the arraylist
+
+                model.addRow(new Object[]{ infoForColumnOne, infoForColumnTwo });  //adding a row
             }
         });
-    }
-}
-        /*
-        //WHAT EACH ELEMENT/BUTTON DOES
-        //addMovie button
-        addMovie.addActionListener(new ActionListener(){
+
+        //totalMovies button  -  LOOK AT PANEL 3
+        totalMovies.addActionListener(new ActionListener(){
             public void actionPerformed(ActionEvent e){
-                model.addRow(new Object[]{ "", "Option 1" });
+                String numberForLabel = Integer.toString(moviesArrayList.size());
+                numberOfMovies.setText(numberForLabel);
             }
         });
 
-        //sortMovies dropdown
-        sortMovies.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                if(sortMovies.getSelectedItem().toString()==("A-Z")){
-                    moviesArrayList.sort(Comparator.naturalOrder());
-                }
-                else if(sortMovies.getSelectedItem().toString()==("Z-A")){
-                    moviesArrayList.sort(Comparator.reverseOrder());
+        //search and enter button  -  LOOK AT PANEL 1  - highlights searched title
+        enter.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                String titleToLookFor = search.getText();
+                titleToLookFor=titleToLookFor.replaceAll("\\s", "");  //remove all spaces to eliminate human error (in the entered String)
+                for(Movie element: moviesArrayList){
+                    String compressedElement=element.getTitle().replaceAll("\\s", "");  //remove all spaces to eliminate human error (in the title)
+                    if((compressedElement.toLowerCase()).contains(titleToLookFor.toLowerCase())){
+                        for(int i=0; i<table.getRowCount(); i++){  //looping through all rows
+                            if(table.getModel().getValueAt(i,0).equals("STRING_TO_SEARCH")){  //checking only the 0-index row because that's where the titles are
+                                System.out.println(table.getModel().getValueAt(i,0)); //Print if found string
+                                (table(i,0)).setBackground(Color.WHITE);;
+                            }
+                        }
+                    }
                 }
             }
         });
-
-
-
 
 
     }
 
-   public void addNewMovie(ArrayList<Movie> moviesList){
 
+/*
 
+    public static void sortMovies(ArrayList<Movie> movies){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("1. A-Z");
+        System.out.println("2. Z-A");
+        System.out.println("3. Genre");
+        int num = scanner.nextInt();
+
+        if(num==1){
+            movies.sort(Comparator.comparing(Movie::getTitle)); // sort A-Z (by title)
+        } else if (num == 2) {
+            movies.sort(Comparator.comparing(Movie::getTitle).reversed()); // sort Z-A (by title)
+        } else if (num == 3) {
+            movies.sort(Comparator.comparing(Movie::getGenre)); // sort by genre A-Z
+        }
     }
-}
+
+    public static void searchMovie(ArrayList<Movie> movies){
+        Scanner scanner = new Scanner(System.in);
+        System.out.println("Which movie do you want?");
+        String searched = scanner.nextLine();
+        String compressedSearched=searched.replaceAll("\\s", "");
+        for(Movie element: movies){
+            String compressedElement=element.getTitle().replaceAll("\\s", "");
+            if((compressedElement.toLowerCase()).contains(compressedSearched.toLowerCase())){
+                System.out.println(element.getTitle());
+            }
+        }
+    }
 */
+
+
+}
+
 
 class Movie{
     private String title;
     private String genre;
 
-    public Movie(String title){
+    public Movie(String title, String genre){
         this.title=title;
         this.genre=genre;
     }
@@ -154,8 +194,3 @@ class Movie{
         return genre;
     }
 }
-
-/*
-          MOVIE COLLECTION MANAGER
-[add movie][sort(dropdown A-Z/genre)][Total]
- */

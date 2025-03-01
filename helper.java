@@ -54,7 +54,7 @@ public class helper {
         for(movie element: movies){
             String compressedElement=element.getTitle().replaceAll("\\s", "");
             if((compressedElement.toLowerCase()).contains(compressedSearched.toLowerCase())){
-                System.out.print
+                System.out.println(element.getTitle());
             }
         }
     }
